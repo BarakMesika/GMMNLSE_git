@@ -34,12 +34,16 @@ function [fiber, sim, input_field, others] = popagation_parameters_template()
         Fiber_params = load([fiber.MM_folder 'Fiber_params.mat'], 'data');
         fiber.radius = Fiber_params.data.radius;
         others.modes = Fiber_params.data.num_modes; 
+        others.Nx = Fiber_params.Nx;
         dt = time_window/N;
         t = (-N/2:N/2-1)'*dt; % time axsis [ps]
         input_field.dt = dt;
         input_field.fields = zeros([size(t,1) others.modes]);
         E_modes = zeros(1,others.modes);
 
+        others.numeric.time_window = time_window;
+        others.numeric.N = N;
+        others.numeric.deltaZ = sim.deltaZ;
          %% Initial Pulse 
         % noise to the intial pulse
         % noise = randn(size(t))+1i*randn(size(t));
@@ -86,5 +90,14 @@ function [fiber, sim, input_field, others] = popagation_parameters_template()
             input_field.fields(:,ii) = sqrt(E_modes(ii))*tmp + noise;
         end
 
+
+        % dispersion and non linear lengths caculations
+        w0 = 2*pi*sim.f0;
+        nonlin_const = fiber.n2*w0/2.99792458e-4; % W^-1 m
+        gammaLP01 = nonlin_const*fiber.SR(1,1,1,1);
+        P0 = abs(fiber.betas(3,1))/gammaLP01/(T0.^2);
+
+        Ld = T0^2/abs(fiber.betas(3,1))
+        Lnl = (gammaLP01 * P0)^(-1)
 
 end

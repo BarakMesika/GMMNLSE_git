@@ -4,7 +4,7 @@ clearvars; close all;clc;
 %% Add the folders of multimode files and others
 addpath('../');                                         % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
 
-[fiber, sim, input_field, others] = Barak_GIF625_6center_modes_CW1550nm_1550nm;
+[fiber, sim, input_field, others] = Barak_KBSC_10modes_1030nm;
 
 modes = others.modes; 
 
@@ -66,7 +66,7 @@ title('Time Domain')
 subplot(1,2,2)
 plot(fftshift(lambda), abs(fftshift(ifft(input_field.fields))).^2)
 xlabel('Wavelength [nm]');
-xlim([1200 1800]);
+xlim([900 1200]);
 ylabel('Intensity [a.u.]');
 title('Spectrum')
 
@@ -132,7 +132,7 @@ for ii=1:others.modes
 end
 hold off
 legend
-xlim([-5 5]);
+% xlim([-5 5]);
 xlabel('Time (ps)');
 ylabel('Intensity (W)');
 title('The final output field of YDFA');
@@ -150,7 +150,7 @@ legend
 xlabel('Wavelength (nm)');
 ylabel('Intensity (a.u.)');
 title('The final output spectrum of YDFA');
-xlim([1200 1800]);
+xlim([600 2000]);
 
 %% plot evolution
 
@@ -167,7 +167,7 @@ for jj=1:(fiber.L0/sim.save_period)
     xlabel('Wavelength (nm)');
     ylabel('Intensity (a.u.)');
     title(['The spectrum of YDFA' '   z:' num2str(distance(jj)) '[m]']);
-    xlim([1400 1800]);
+    xlim([600 1600]);
     drawnow
 end
 
@@ -181,7 +181,7 @@ for jj=1:(fiber.L0/sim.save_period)
     end
     hold off
     legend
-    xlim([-1 1]);
+    % xlim([-1 1]);
     xlabel('Time (ps)');
     ylabel('Intensity (W)');
     title(['The field of YDFA' '   z:' num2str(distance(jj)) '[m]']);
@@ -260,3 +260,4 @@ end
 % 
 %     end
 % end
+
