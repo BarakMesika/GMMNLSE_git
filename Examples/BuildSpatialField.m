@@ -49,6 +49,9 @@ h = waitbar(0, 'calculate field...');
         for idx_t = 1:length(t)
             tmp(:,:,idx_t) = norm_mode(:,:) .* fields(idx_t,ii) ;
         end
+
+        % tmp = bsxfun(@times, norm_mode, fields(:, ii));
+
         total_field = total_field + tmp;
         % dt = others.t(2)-others.t(1);
         % sum(sum(sum(abs(total_field).^2))) * dt; % make sure that the integral is the pulse energy

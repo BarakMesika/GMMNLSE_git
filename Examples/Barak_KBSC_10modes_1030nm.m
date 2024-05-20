@@ -18,7 +18,7 @@ function [fiber, sim, input_field, others] = Barak_KBSC_10modes_1030nm(E_tot)
         save_num = 100;                                                                % how many popagation points to save
 
 
-        sim.deltaZ = 50e-6;                                                            % delta z point [m] 
+        sim.deltaZ = 100e-6;                                                            % delta z point [m] 
         sim.single_yes = true;                                                          % for GPU. use true
         sim.adaptive_deltaZ.model = 0;                                                  % turn adaptive-step off
         sim.step_method = "RK4IP";                                                      % use "MPA" instead of the default "RK4IP"
@@ -47,10 +47,10 @@ function [fiber, sim, input_field, others] = Barak_KBSC_10modes_1030nm(E_tot)
          %% Initial Pulse 
 
         % noise to the intial pulse
-        noise_normal = randn(size(t))+1i*randn(size(t));
-        noise_normal = noise_normal/sqrt( dt*sum(abs(noise_normal).^2)*1e-3 );
-        noise_energy = 1; % [pJ]
-        noise = noise_normal*sqrt(noise_energy);
+        % noise_normal = randn(size(t))+1i*randn(size(t));
+        % noise_normal = noise_normal/sqrt( dt*sum(abs(noise_normal).^2)*1e-3 );
+        % noise_energy = 1; % [pJ]
+        % noise = noise_normal*sqrt(noise_energy);
         noise = 0;
 
 		T0 = 60e-3; % 60fs
@@ -61,10 +61,11 @@ function [fiber, sim, input_field, others] = Barak_KBSC_10modes_1030nm(E_tot)
         if nargin
             input_field.E_tot = E_tot; 
         else
-            input_field.E_tot = 60e3; 
+            input_field.E_tot = 40e3; 
         end
-                                 
-        E_modes(1:5) = 1/5; 
+                 
+        E_modes(1:3) = 1/3;
+        
         
 
         %%  DONT EDIT 
