@@ -78,10 +78,8 @@ title('Spectrum')
 dirName  = others.data_folder;                        % new folder to save the data
 mkdir(dirName);
 
-
 % start propagation
 output_field = GMMNLSE_propagate(fiber,input_field,sim,gain_param);
-
 % save data
 % uamp = single( output_field.fields );
 

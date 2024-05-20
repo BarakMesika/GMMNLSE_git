@@ -45,12 +45,12 @@ h = waitbar(0, 'calculate field...');
         % sum(sum(abs(norm_mode).^2))
 
 
-        tmp = zeros(newSize, newSize, length(others.t));
-        for idx_t = 1:length(t)
-            tmp(:,:,idx_t) = norm_mode(:,:) .* fields(idx_t,ii) ;
-        end
+        % tmp = zeros(newSize, newSize, length(others.t));
+        % for idx_t = 1:length(t)
+        %     tmp(:,:,idx_t) = norm_mode(:,:) .* fields(idx_t,ii) ;
+        % end
 
-        % tmp = bsxfun(@times, norm_mode, fields(:, ii));
+        tmp = bsxfun(@times, norm_mode, reshape(fields(:,ii),1,1,[]));
 
         total_field = total_field + tmp;
         % dt = others.t(2)-others.t(1);
