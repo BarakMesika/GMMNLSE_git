@@ -4,7 +4,7 @@ clearvars; close all;clc;
 %% Add the folders of multimode files and others
 addpath('../');                                         % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
 
-[fiber, sim, input_field, others] = Barak_KBSC_10modes_1030nm;
+[fiber, sim, input_field, others] = TL_KBSC_10modes_1030nm;
 
 modes = others.modes; 
 
@@ -179,7 +179,7 @@ for jj=1:(fiber.L0/sim.save_period)
     end
     hold off
     legend
-    % xlim([-1 1]);
+    xlim([-3 3]);
     xlabel('Time (ps)');
     ylabel('Intensity (W)');
     title(['The field of YDFA' '   z:' num2str(distance(jj)) '[m]']);

@@ -4,9 +4,9 @@ clearvars; close all;clc;
 %% Add the folders of multimode files and others
 addpath('../');                                         % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
 
-energy_input = linspace(0.5e3,80e3,15);
+energy_input = linspace(0.5e3,70e3,15);
 for ii=1:length(energy_input)
-[fiber, sim, input_field, others] = Barak_KBSC_10modes_1030nm(energy_input(ii));
+[fiber, sim, input_field, others] = TL_KBSC_10modes_1030nm(energy_input(ii));
 
 modes = others.modes; 
 
