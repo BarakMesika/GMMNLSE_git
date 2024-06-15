@@ -2,7 +2,7 @@ function [fiber, sim, input_field, others] = TL_KBSC_10modes_1030nm(E_tot)
 
 
         %% Other Prameters
-        others.data_folder = 'GIF625_KBSC_10modes_1030nm_energy_sweep\'; % where to save the propagation data
+        others.data_folder = 'GIF625_KBSC_TL_10modes_1030nm_energy_sweep\'; % where to save the propagation data
 
 
         
@@ -13,13 +13,13 @@ function [fiber, sim, input_field, others] = TL_KBSC_10modes_1030nm(E_tot)
         % fiber.gain_Aeff = ;                                                           % deffault is 1.6178e-10
         
         %% Simulation parameters
-        time_window = 20;                                                          % Time Window [ps]
+        time_window = 60;                                                          % Time Window [ps]
         N = 2^14;                                                                  % the number of time points
         save_num = 100;                                                                % how many popagation points to save
 
 
         sim.deltaZ = 100e-6;                                                            % delta z point [m] 
-        sim.single_yes = true;                                                          % for GPU. use true
+        sim.single_yes = false;                                                          % for GPU. use true
         sim.adaptive_deltaZ.model = 0;                                                  % turn adaptive-step off
         sim.step_method = "RK4IP";                                                      % use "MPA" instead of the default "RK4IP"
         % sim.MPA.M = 10;                                                                   % if we use MPA algorithem
@@ -53,8 +53,8 @@ function [fiber, sim, input_field, others] = TL_KBSC_10modes_1030nm(E_tot)
         % noise = noise_normal*sqrt(noise_energy);
         noise = 0;
 
-		T0 = 175e-3; % 175fs
-        tmp = exp(-1*(t/T0).^2);                    % init pulse shape (will be notmalized to 1nJ)
+        T0 = 175e-3 / ( 2*sqrt(log(2)) ); % 175fs FWHM
+        tmp = exp(-1/2*(t/T0).^2);                    % init pulse shape (will be notmalized to 1nJ)
          
 
         % Total Energy [pJ]
@@ -67,7 +67,7 @@ function [fiber, sim, input_field, others] = TL_KBSC_10modes_1030nm(E_tot)
         E_modes(1:5) = 1/5;
         
         
-
+        
         %%  DONT EDIT 
         % sets the other parameters
         fiber.betas_filename = 'betas.mat';                                        % betas file name (in the fiber data folder)

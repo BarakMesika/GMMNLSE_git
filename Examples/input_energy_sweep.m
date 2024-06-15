@@ -1,12 +1,12 @@
-clearvars; close all;clc;
-
+function input_energy_sweep(fiber_script, energy_vec)
 % run from the sub folder. the section add to the path the main simulation folder
 %% Add the folders of multimode files and others
 addpath('../');                                         % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
 
-energy_input = linspace(0.5e3,70e3,15);
+energy_input = energy_vec;
 for ii=1:length(energy_input)
-[fiber, sim, input_field, others] = TL_KBSC_10modes_1030nm(energy_input(ii));
+[fiber, sim, input_field, others] = fiber_script(energy_input(ii));
+disp(['START ITERATION '  num2str(ii)]);
 
 modes = others.modes; 
 
@@ -81,3 +81,4 @@ save([dirName fName], 'output_field', 'fiber', 'sim', 'input_field', 'others');
 
 end
 
+end
