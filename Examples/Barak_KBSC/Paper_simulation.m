@@ -107,17 +107,17 @@ function plot_spectral_intensity(file_path, title_name)
 
    
     total_field = BuildSpatialField(output_field.fields(:,:,end),fiber, sim, others);
-    time_integral = sum(abs(total_field).^2, 3) * input_field.dt;
-    [max_x_idx, max_y_idx] = find_max_indices(time_integral);
+    % time_integral = sum(abs(total_field).^2, 3) * input_field.dt;
+    % [max_x_idx, max_y_idx] = find_max_indices(time_integral);
 
     spatial_spectal = ifft(total_field,[],3);
     spatial_spectal = fftshift(spatial_spectal , 3);
 
     figure;
-    plot(fftshift(others.lambda), squeeze(abs(spatial_spectal(max_x_idx,max_y_idx,:)).^2 ) );
+    plot(fftshift(others.lambda), squeeze(abs( sum (sum (spatial_spectal,1) ,2) ).^2 ) );
     xlabel('Wavelength [nm]')
     ylabel('Spectral Power [a.u]')
-    title({title_name, 'Spectrum at the center of the beam'})
+    title({title_name, 'Integrated Spectrum'})
     xlim([960 1100])
     grid minor;
     set(gca, 'FontSize', 20);
