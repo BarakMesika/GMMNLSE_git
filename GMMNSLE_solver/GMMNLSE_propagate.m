@@ -256,7 +256,7 @@ end
 current_path = mfilename('fullpath');
 sep_pos = strfind(current_path,sep_char);
 current_folder = current_path(1:sep_pos(end));
-addpath([current_folder 'GMMNLSE algorithm/']);
+% addpath([current_folder 'GMMNLSE algorithm/']);
 
 %%
 switch sim.adaptive_deltaZ.model

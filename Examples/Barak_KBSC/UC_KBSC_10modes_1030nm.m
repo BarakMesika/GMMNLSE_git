@@ -1,21 +1,21 @@
-function [fiber, sim, input_field, others] = popagation_parameters_template()
+function [fiber, sim, input_field, others] = UC_KBSC_10modes_1030nm(E_tot)
 
 
         %% Other Prameters
-        others.data_folder = 'BarakTest_tt\'; % where to save the propagation data
+        others.data_folder = 'GIF625_KBSC_UC_10modes_1030nm_energy_sweep\'; % where to save the propagation data
 
 
         
         %% Fiber parameters
-        fiber.MM_folder = '../Fibers/Barak_GIF625_3modes_CW1550nm/';               % Fiber data folder
-        fiber.L0 = 3;                                                                 % Fiber length [m]
-        fiber.n2 =3.2e-20;                                                              % non linear coeff [m^2/W]
+        fiber.MM_folder = '../Fibers/Barak_KBSC_10modes_1030nm/';               % Fiber data folder
+        fiber.L0 = 1;                                                                 % Fiber length [m]
+        fiber.n2 =2.3e-20;                                                              % non linear coeff [m^2/W]
         % fiber.gain_Aeff = ;                                                           % deffault is 1.6178e-10
         
         %% Simulation parameters
-        time_window = 20;                                                          % Time Window [ps]
-        N = 2^13;                                                                  % the number of time points
-        save_num = 30;                                                                % how many popagation points to save
+        time_window = 100;                                                          % Time Window [ps]
+        N = 2^14;                                                                  % the number of time points
+        save_num = 100;                                                                % how many popagation points to save
 
 
         sim.deltaZ = 100e-6;                                                            % delta z point [m] 
@@ -34,7 +34,7 @@ function [fiber, sim, input_field, others] = popagation_parameters_template()
         Fiber_params = load([fiber.MM_folder 'Fiber_params.mat'], 'data');
         fiber.radius = Fiber_params.data.radius;
         others.modes = Fiber_params.data.num_modes; 
-        others.Nx = Fiber_params.Nx;
+        % others.Nx = Fiber_params.Nx;
         dt = time_window/N;
         t = (-N/2:N/2-1)'*dt; % time axsis [ps]
         input_field.dt = dt;
@@ -45,22 +45,29 @@ function [fiber, sim, input_field, others] = popagation_parameters_template()
         others.numeric.N = N;
         others.numeric.deltaZ = sim.deltaZ;
          %% Initial Pulse 
+
         % noise to the intial pulse
-        % noise = randn(size(t))+1i*randn(size(t));
-        % noise = noise/sqrt( dt*sum(abs(noise).^2)*1e-3 )*sqrt(1e-6);
+        % noise_normal = randn(size(t))+1i*randn(size(t));
+        % noise_normal = noise_normal/sqrt( dt*sum(abs(noise_normal).^2)*1e-3 );
+        % noise_energy = 1; % [pJ]
+        % noise = noise_normal*sqrt(noise_energy);
         noise = 0;
 
-		T0 = 175e-3 / ( 2*sqrt(log(2)) );               % 175fs FWHM
-        tmp = exp(-(1/2)*(t/T0).^2);                    % init pulse shape (will be notmalized to 1nJ)
+        T0 = 175e-3 / ( 2*sqrt(log(2)) );               % 175fs FWHM
+        C = 0.3155; % fs^2
+        tmp = exp(-(1/2) * (t.^2) / (T0^2 - 1i*C ) );                    % init pulse shape (will be notmalized to 1nJ)
          
 
-        input_field.E_tot = 500;                                      % Total Energy [pJ]
-        E_modes(1) = 0.9; E_modes(2) = 0.07; E_modes(3) = 0.01; 
+        % Total Energy [pJ]
+        if nargin
+            input_field.E_tot = E_tot; 
+        else
+            input_field.E_tot = 0.5e3; 
+        end
+                 
+        E_modes(1:5) = 1/5;
         
         
-
-
-
 
         %%  DONT EDIT 
         % sets the other parameters
@@ -95,9 +102,11 @@ function [fiber, sim, input_field, others] = popagation_parameters_template()
         w0 = 2*pi*sim.f0;
         nonlin_const = fiber.n2*w0/2.99792458e-4; % W^-1 m
         gammaLP01 = nonlin_const*fiber.SR(1,1,1,1);
-        P0 = abs(fiber.betas(3,1))/gammaLP01/(T0.^2);
+        % P0 = abs(fiber.betas(3,1))/gammaLP01/(T0.^2);
+        P0 = sqrt(E_modes(1));
 
         Ld = T0^2/abs(fiber.betas(3,1))
-        Lnl = (gammaLP01 * P0)^(-1)
+        Lnl_LP01 = (gammaLP01 * P0)^(-1)
+
 
 end

@@ -1,25 +1,25 @@
-function [fiber, sim, input_field, others] = popagation_parameters_template()
-
-
-        %% Other Prameters
-        others.data_folder = 'BarakTest_tt\'; % where to save the propagation data
-
-
+%% PLEASE
+% make the function and the folder the same name 
+function [fiber, sim, input_field, others] = Barak_Singlemode_1modes_CW1550nm()
         
+        %% Other Prameters
+        others.data_folder = 'Barak_singlemode\'; % where to save the propagation data
+
+
         %% Fiber parameters
-        fiber.MM_folder = '../Fibers/Barak_GIF625_3modes_CW1550nm/';               % Fiber data folder
-        fiber.L0 = 3;                                                                 % Fiber length [m]
-        fiber.n2 =3.2e-20;                                                              % non linear coeff [m^2/W]
+        fiber.MM_folder = '../Fibers/Barak_Singlemode_1modes_CW1550nm/';               % Fiber data folder
+        fiber.L0 = 5;                                                                 % Fiber length [m]
+        fiber.n2 = 3.2e-20;                                                              % non linear coeff [m^2/W]
         % fiber.gain_Aeff = ;                                                           % deffault is 1.6178e-10
         
         %% Simulation parameters
         time_window = 20;                                                          % Time Window [ps]
         N = 2^13;                                                                  % the number of time points
-        save_num = 30;                                                                % how many popagation points to save
+        save_num = 100;                                                                % how many popagation points to save
 
 
         sim.deltaZ = 100e-6;                                                            % delta z point [m] 
-        sim.single_yes = true;                                                          % for GPU. use true
+        sim.single_yes = false;                                                          % for GPU. use true
         sim.adaptive_deltaZ.model = 0;                                                  % turn adaptive-step off
         sim.step_method = "RK4IP";                                                      % use "MPA" instead of the default "RK4IP"
         % sim.MPA.M = 10;                                                                   % if we use MPA algorithem
@@ -29,37 +29,33 @@ function [fiber, sim, input_field, others] = popagation_parameters_template()
         sim.progress_bar = true;                                                        % disable for slightly better preformence
         sim.sw = 0;                                                                     % disable shock waves (self stipening)
 
+
     
         %% DONT EDIT
         Fiber_params = load([fiber.MM_folder 'Fiber_params.mat'], 'data');
         fiber.radius = Fiber_params.data.radius;
         others.modes = Fiber_params.data.num_modes; 
-        others.Nx = Fiber_params.Nx;
         dt = time_window/N;
         t = (-N/2:N/2-1)'*dt; % time axsis [ps]
         input_field.dt = dt;
         input_field.fields = zeros([size(t,1) others.modes]);
         E_modes = zeros(1,others.modes);
 
-        others.numeric.time_window = time_window;
-        others.numeric.N = N;
-        others.numeric.deltaZ = sim.deltaZ;
          %% Initial Pulse 
-        % noise to the intial pulse
-        % noise = randn(size(t))+1i*randn(size(t));
-        % noise = noise/sqrt( dt*sum(abs(noise).^2)*1e-3 )*sqrt(1e-6);
-        noise = 0;
-
-		T0 = 175e-3 / ( 2*sqrt(log(2)) );               % 175fs FWHM
-        tmp = exp(-(1/2)*(t/T0).^2);                    % init pulse shape (will be notmalized to 1nJ)
-         
-
-        input_field.E_tot = 500;                                      % Total Energy [pJ]
-        E_modes(1) = 0.9; E_modes(2) = 0.07; E_modes(3) = 0.01; 
+ 
         
+        T0 = 175e-3 / ( 2*sqrt(log(2)) );               % 175fs FWHM
+        C = -0.3155; % fs^2
+        tmp = exp(-(1/2) * (t.^2) / (T0^2 - 1i*C ) );     % init pulse shape (will be notmalized to 1nJ)
+                       
+               
+        E_modes(1) = 1;   
         
 
+        input_field.E_tot = 1000; % Total Energy [pJ]
+        
 
+      
 
 
         %%  DONT EDIT 
@@ -80,24 +76,34 @@ function [fiber, sim, input_field, others] = popagation_parameters_template()
         others.lambda = c./f; % [nm]
         others.t = t;
 
-        % normlized energy to 1pJ
-        tmp = tmp/sqrt( dt*sum(abs(tmp).^2));
-
-        E_modes = E_modes * input_field.E_tot;
-
-        % give energy to the initial pulse. for each mode
-        for ii=1:others.modes
-            input_field.fields(:,ii) = sqrt(E_modes(ii))*tmp + noise;
-        end
 
 
-        % dispersion and non linear lengths caculations
+        % Aeff = 113.0973*1e-12; % [m^2]
+        % gamma = fiber.n2/ (sim.lambda0 * Aeff);
+        % P0 = abs(fiber.betas(3,1)) / (T0^2 * gamma);
+
+
         w0 = 2*pi*sim.f0;
         nonlin_const = fiber.n2*w0/2.99792458e-4; % W^-1 m
         gammaLP01 = nonlin_const*fiber.SR(1,1,1,1);
         P0 = abs(fiber.betas(3,1))/gammaLP01/(T0.^2);
 
-        Ld = T0^2/abs(fiber.betas(3,1))
-        Lnl = (gammaLP01 * P0)^(-1)
+
+
+        Ld = T0^2/abs(fiber.betas(3,1));
+        % Lnl = (gamma * P0)^(-1);
+        Lnl = (gammaLP01 * P0)^(-1);
+
+
+        % normlized energy to 1pJ
+        tmp = tmp/sqrt( dt*sum(abs(tmp).^2) );
+
+        E_modes = E_modes * input_field.E_tot;
+
+        % give energy to the initial pulse. for each mode
+        for ii=1:others.modes
+            input_field.fields(:,ii) = sqrt(E_modes(ii))*tmp;
+        end
+
 
 end
