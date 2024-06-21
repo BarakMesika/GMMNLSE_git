@@ -42,10 +42,10 @@ subplot(1,2,1); imagesc(reconstrucPhi); title('Reconstructed');
 subplot(1,2,2); imagesc(zeroedMatrix); title('Original');
 
 %% normalize vlaues
-modes_coeff = sqrt(c);
-modes_coeff = modes_coeff / sum(abs(modes_coeff));
-stem(abs(modes_coeff));
+% modes_coeff = sqrt(c);
+% modes_coeff = c ./ sum(abs(c));
+% stem(abs(modes_coeff));
 
 %% save vlaues
-save('modes_coeff', 'modes_coeff');
+save('modes_coef', 'c');
 close;

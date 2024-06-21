@@ -1,7 +1,7 @@
 clc; clear;
 
 %% Need to run once
-[fiber, sim, input_field, others] = TL_KBSC_15modes_1030nm_testing(1e3,zeros(1,15));
+[fiber, sim, input_field, others] = TL_KBSC_15modes_1030nm_testing(1e3,zeros(1,15), zeros(1,15));
 
 
 modes = others.modes; 
@@ -49,9 +49,13 @@ gain_param = {gain_rate_eqn,cross_sections_pump,cross_sections,overlap_factor,N_
 
 
 %%
-E_vec = load('modes_coeff.mat');
-E_vec = E_vec.modes_coeff;
-E_tot_vec = linspace(10e3,30e3,10);
+c = load('modes_coef.mat');
+c = c.c;
+c = c / sum(abs(c));
+E_vec = abs(c);
+phase_vec = exp(1i*angle(c));
+
+E_tot_vec = linspace(10e3,30e3,5);
 
 
 for iter = 1:length(E_tot_vec)
@@ -62,7 +66,7 @@ E_tot = E_tot_vec(iter);
 
 % run propagation
 
-[fiber, sim, input_field, others] = TL_KBSC_15modes_1030nm_testing(E_tot,E_vec);
+[fiber, sim, input_field, others] = TL_KBSC_15modes_1030nm_testing(E_tot,E_vec, phase_vec);
 
 dirName  = others.data_folder;                        % new folder to save the data
 mkdir(dirName);
