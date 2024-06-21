@@ -49,15 +49,15 @@ gain_param = {gain_rate_eqn,cross_sections_pump,cross_sections,overlap_factor,N_
 
 
 %%
-E_vec = zeros(1,modes);
-E_vec(1:5) = 1/5;
-E_tot_vec = linspace(10e3,50e3,10);
+E_vec = load('modes_coeff.mat');
+E_vec = E_vec.modes_coeff;
+E_tot_vec = linspace(10e3,30e3,10);
 
 
 for iter = 1:length(E_tot_vec)
 
 % pulse energy
-E_tot = E_tot_vec(iter); % 10nJ
+E_tot = E_tot_vec(iter); 
 
 
 % run propagation
@@ -86,6 +86,7 @@ cmap = linspecer(others.modes);
 E = squeeze( sum(abs(output_field.fields).^2,1) )*dt;
 distance = 0:sim.save_period:fiber.L0; 
 
+group = zeros(5,length(E(1,:)));
 group(1,:) = E(1,:);
 group(2,:) = ( E(2,:) + E(3,:) ) / 2;
 group(3,:) = ( E(4,:) + E(5,:) + E(6,:) ) / 3;
@@ -102,7 +103,7 @@ hold off
 legend
 xlabel('Propagation length (m)');
 ylabel('Energy (pJ)');
-title(['file no.' num2str(iter)]);
+title({['file no.' num2str(iter)], ['Energy = ' num2str(E_tot * 1e-3) 'nJ'] });
 ylim([0 input_field.E_tot])
 grid on;
 
