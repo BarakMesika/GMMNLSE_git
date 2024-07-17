@@ -1,11 +1,28 @@
 
+
+%% Temp
+
+z_idx = 61;
+
+if ~isfield(others, 'Nx')
+    others.Nx = 1024;
+end
+
+total_field = BuildSpatialField(output_field.fields(:,:,z_idx),fiber, sim, others);
+
+% the spectrum at each point on the grid -> spatial_spectral(X,Y,lambda) 
+spatial_spectral = ifft(total_field,[],3);
+spatial_spectral = fftshift(spatial_spectral , 3);
+spatial_spectral = abs(spatial_spectral).^2;
+clear total_field;
+
 %% with real simulation
 if ~isfield(others, 'Nx')
     others.Nx = 1024;
 end
-total_field = BuildSpatialField(output_field.fields(:,:,end),fiber, sim, others);
+total_field = BuildSpatialField(output_field.fields(:,:,1),fiber, sim, others);
 
-% make integral on all time ~20ps
+% make integral on all time 
 time_integral = sum(abs(total_field).^2, 3) * input_field.dt;
 % energy_tot = sum(sum(time_integral)) % check that we get all of the energy
 
@@ -21,7 +38,7 @@ x =  (-others.Nx/2:others.Nx/2-1)*dx;
 
 gg=figure('Position',[1 1 600 600]);
 % clims = [1e1 max(max(abs(time_integral).^2))];
-imagesc(x, x, abs(time_integral).^2);
+imagesc(x, x, time_integral);
 
 colorbar;
 xlim([min(x) max(x)]);ylim([min(x) max(x)]);

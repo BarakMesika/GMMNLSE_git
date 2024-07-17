@@ -13,13 +13,12 @@ t = others.t;
 lambda = sim.lambda0;
 
 % downsample the spatial picture by a factor of n^2
-n = 4;
+n = 8;
  if mod(others.Nx, n) ~= 0
         error('Matrix size must be divisible by n');
  end
  newSize = others.Nx / n;
 
-% TODO: add all z
 total_field = zeros( newSize, newSize, length(others.t) ); % total_field(X,Y,t)
 
 h = waitbar(0, 'calculate field...');
@@ -30,10 +29,9 @@ h = waitbar(0, 'calculate field...');
         % load mode spashial profile
         fname=[fiber.MM_folder 'radius' strrep(num2str(fiber.radius), '.', '_') 'boundary0000fieldscalar'...
                 'mode' num2str(ii,'%03.f') 'wavelength' strrep(num2str(lambda*1e9), '.', '_')];
-        phi = load([ fname '.mat'], 'phi');
-        phi = phi.phi;
-		
-		phi_downsampled = downsample_matrix(phi, n);
+        load([ fname '.mat'], 'phi', 'x');
+
+        phi_downsampled = downsample_matrix(phi, x ,n);
 
         % normalize the field norm
         norm_mode = (phi_downsampled) ./ sqrt((sum(sum(abs(phi_downsampled).^2))));
@@ -43,12 +41,6 @@ h = waitbar(0, 'calculate field...');
         % imagesc(abs(phi_downsampled).^2);
         % imagesc(abs(norm_mode).^2);
         % sum(sum(abs(norm_mode).^2))
-
-
-        % tmp = zeros(newSize, newSize, length(others.t));
-        % for idx_t = 1:length(t)
-        %     tmp(:,:,idx_t) = norm_mode(:,:) .* fields(idx_t,ii) ;
-        % end
 
         tmp = bsxfun(@times, norm_mode, reshape(fields(:,ii),1,1,[]));
 
@@ -66,26 +58,14 @@ end
 
 
 
-% TODO: make avreging block
-function downsampledMatrix = downsample_matrix(originalMatrix, n)
 
+function downsampledMatrix = downsample_matrix(originalMatrix, x, n)
 
-    N = size(originalMatrix,1);
-    newSize = N/n;
+    x_new = x(1:n:end);
+    [X1,Y1] = meshgrid(x,x);
+    [X2,Y2] = meshgrid(x_new,x_new);
 
-    downsampledMatrix = zeros(newSize, newSize);
-
-    for i = n:n:N
-        for j = n:n:N
-            downsampledMatrix(i/n,j/n) = originalMatrix(i,j);
-        end
-    end
-
-    % % Reshape the matrix into nxn blocks
-    % reshaped = reshape(originalMatrix, n, n, newSize, newSize);
-    % 
-    % % Calculate the average of each nxn block
-    % downsampledMatrix = squeeze(mean(reshaped, [1 2]));
+    downsampledMatrix = interp2(X1,Y1,originalMatrix,X2,Y2, 'cubic');
 
 end
 

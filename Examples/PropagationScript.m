@@ -4,7 +4,7 @@ clearvars; close all;clc;
 %% Add the folders of multimode files and others
 addpath('../');                                         % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
 
-[fiber, sim, input_field, others] = DC_KBSC_10modes_1030nm(240e3);
+[fiber, sim, input_field, others] = Amit_Singlemode_1modes;
 
 modes = others.modes; 
 
@@ -164,8 +164,8 @@ for jj=1:(fiber.L0/sim.save_period)
     legend
     xlabel('Wavelength (nm)');
     ylabel('Intensity (a.u.)');
-    title(['The spectrum of YDFA' '   z:' num2str(distance(jj)) '[m]']);
-    xlim([1450 1600]);
+    title(['Spectrum' '   z:' num2str(distance(jj)) '[m]']);
+    xlim([800 1400]);
     drawnow
 end
 
@@ -179,7 +179,7 @@ for jj=1:(fiber.L0/sim.save_period)
     end
     hold off
     legend
-    % xlim([-3 3]);
+    xlim([-3 3]);
     xlabel('Time (ps)');
     ylabel('Intensity (W)');
     title(['The field of YDFA' '   z:' num2str(distance(jj)) '[m]']);

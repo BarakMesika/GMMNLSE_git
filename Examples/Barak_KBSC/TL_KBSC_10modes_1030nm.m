@@ -2,7 +2,7 @@ function [fiber, sim, input_field, others] = TL_KBSC_10modes_1030nm(E_tot)
 
 
         %% Other Prameters
-        others.data_folder = 'GIF625_KBSC_TL_10modes_1030nm_energy_sweep\'; % where to save the propagation data
+        others.data_folder = 'Benchmark\'; % where to save the propagation data
 
 
         
@@ -104,8 +104,8 @@ function [fiber, sim, input_field, others] = TL_KBSC_10modes_1030nm(E_tot)
         % P0 = abs(fiber.betas(3,1))/gammaLP01/(T0.^2);
         P0 = sqrt(E_modes(1));
 
-        Ld = T0^2/abs(fiber.betas(3,1))
-        Lnl_LP01 = (gammaLP01 * P0)^(-1)
+        Ld = T0^2/abs(fiber.betas(3,1));
+        Lnl_LP01 = (gammaLP01 * P0)^(-1);
 
 
 end

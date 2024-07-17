@@ -1,15 +1,32 @@
 clc; clear;
 
-setup_file = @TL_KBSC_15modes_1030nm_testing;
-%% Need to run once
-[fiber, sim, input_field, others] = setup_file(1e3,zeros(1,15),zeros(1,15));
+%%
+fiber_script = @TL_KBSC_10modes_1030nm;
+energy_vec = linspace(10e3, 50e3, 5);
 
+% run from the sub folder. the section add to the path the main simulation folder
+%% Add the folders of multimode files and others
+addpath('../');                                         % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
+
+energy_input = energy_vec;
+
+%%%%%%%%
+% START TIMER
+%%%%%%%%
+tic;
+timer_iter = zeros(1, length(energy_input));
+
+for ii=1:length(energy_input)
+[fiber, sim, input_field, others] = fiber_script(energy_input(ii));
+disp(['START ITERATION '  num2str(ii)]);
 
 modes = others.modes; 
 
-gain_rate_eqn.mode_volume = modes; 
+gain_rate_eqn.mode_volume = modes;                  % the total number of available spatial modes in the fiber
 
-% Gain info - TODO
+
+
+%% Gain info - TODO
 gain_rate_eqn.MM_folder = fiber.MM_folder; % specify the folder with the eigenmode profiles
 gain_rate_eqn.cross_section_filename = 'Liekki Yb_AV_20160530.txt';
 gain_rate_eqn.saved_mat_filename = 'MM_YDFA_strong_waveguide_rate_eqn'; % the files used to temporarily store the data during iterations if necessary
@@ -42,35 +59,14 @@ gain_rate_eqn.verbose = true; % show the information(final pulse energy) during 
 gain_rate_eqn.cladding_diameter = gain_rate_eqn.cladding_diafffmeter;
 
 
-% Gain parameters - TODO
+%% Gain parameters - TODO
 [gain_rate_eqn,cross_sections_pump,cross_sections,overlap_factor,N_total,FmFnN,GammaN] = ...
                                                 gain_info( sim,gain_rate_eqn,others.lambda );
 % send this into GMMNLSE_propagate function
 gain_param = {gain_rate_eqn,cross_sections_pump,cross_sections,overlap_factor,N_total,FmFnN,GammaN}; 
 
 
-%%
-
-random_phase = exp( 1i * rand(1,modes)* 2*pi );
-
-E_modes = zeros(1,modes);
-E_modes(1:5) = 1;
-E_modes = E_modes ./ sum(E_modes);
-
-% E_tot_vec = [2,5,9.73,14.47,21.57,0.1,35] .* 1e3 * 28.58;
-E_tot_vec = ones(1,10) .* 21.57 .* 1e3;
-
-for iter = 1:length(E_tot_vec)
-
-    random_phase = exp( 1i * rand(1,modes)* 2*pi );
-
-% pulse energy
-E_tot = E_tot_vec(iter); 
-
-
-% run propagation
-
-[fiber, sim, input_field, others] = setup_file(E_tot,E_modes,random_phase);
+%% Propagation
 
 dirName  = others.data_folder;                        % new folder to save the data
 mkdir(dirName);
@@ -79,59 +75,22 @@ mkdir(dirName);
 % start propagation
 output_field = GMMNLSE_propagate(fiber,input_field,sim,gain_param);
 
-fileCount = iter;
-fName = ['data_' num2str(fileCount,'%03.0f')];          % data file name
+% save data
+% uamp = single( output_field.fields );
+
+% make sure we create a new saved file
+fileCount = 0;
+folder_files = dir(dirName);
+for i = 1:length(folder_files)
+    % Check if the entry is not a directory
+    if ~folder_files(i).isdir
+        fileCount = fileCount + 1;
+    end
+end
+
+fName = ['data_' num2str(fileCount+1,'%03.0f')];          % data file name
 save([dirName fName], 'output_field', 'fiber', 'sim', 'input_field', 'others');
 
-
-%% plots
-
-dt = input_field.dt;
-t = others.t;
-lambda = others.lambda;
-cmap = linspecer(others.modes);
-
-E = squeeze( sum(abs(output_field.fields).^2,1) )*dt;
-distance = 0:sim.save_period:fiber.L0; 
-
-group = zeros(5,length(E(1,:)));
-group(1,:) = E(1,:);
-group(2,:) = ( E(2,:) + E(3,:) ) / 2;
-group(3,:) = ( E(4,:) + E(5,:) + E(6,:) ) / 3;
-group(4,:) = ( E(7,:) + E(8,:) + E(9,:) + E(10,:) ) / 4; 
-group(5,:) = ( E(11,:) + E(12,:) + E(13,:) + E(14,:) + E(15,:) ) / 5; 
-
-figure;
-for ii=1:size(group,1)
-    plot(distance, group(ii,:),'DisplayName', ['group:' num2str(ii)], 'LineWidth', 2,...
-        'Color', cmap(ii,:));
-    hold on
-end
-hold off
-legend
-xlabel('Propagation length (m)');
-ylabel('Energy (pJ)');
-title({['file no.' num2str(iter)], ['Energy = ' num2str(input_field.E_tot * 1e-3) 'nJ'] });
-ylim([0 input_field.E_tot])
-grid on;
-
-saveas(gcf ,[dirName fName], 'jpg');
-close;
-
-%% SSdata
-z_idx = 61;
-
-if ~isfield(others, 'Nx')
-    others.Nx = 1024;
-end
-
-total_field = BuildSpatialField(output_field.fields(:,:,z_idx),fiber, sim, others);
-
-% the spectrum at each point on the grid -> spatial_spectral(X,Y,lambda) 
-spatial_spectral = ifft(total_field,[],3);
-spatial_spectral = fftshift(spatial_spectral , 3);
-spatial_spectral = abs(spatial_spectral).^2;
-
-save([dirName fName 'SSdata'], 'output_field', 'fiber', 'sim', 'input_field', 'others', 'spatial_spectral','-v7.3');
-
+toc
+timer_iter(ii) = toc;
 end
