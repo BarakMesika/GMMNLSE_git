@@ -34,7 +34,7 @@ function [fiber, sim, input_field, others] = popagation_parameters_template()
         Fiber_params = load([fiber.MM_folder 'Fiber_params.mat'], 'data');
         fiber.radius = Fiber_params.data.radius;
         others.modes = Fiber_params.data.num_modes; 
-        others.Nx = Fiber_params.Nx;
+        others.Nx = Fiber_params.data.Nx;
         dt = time_window/N;
         t = (-N/2:N/2-1)'*dt; % time axsis [ps]
         input_field.dt = dt;
@@ -50,7 +50,7 @@ function [fiber, sim, input_field, others] = popagation_parameters_template()
         % noise = noise/sqrt( dt*sum(abs(noise).^2)*1e-3 )*sqrt(1e-6);
         noise = 0;
 
-		T0 = 175e-3 / ( 2*sqrt(log(2)) );               % 175fs FWHM
+		T0 = 175e-3 / ( 2*sqrt(log(2)) );               % 175fs FWHM ( 1/2 NO 1/e)
         tmp = exp(-(1/2)*(t/T0).^2);                    % init pulse shape (will be notmalized to 1nJ)
          
 

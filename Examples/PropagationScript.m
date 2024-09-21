@@ -4,7 +4,7 @@ clearvars; close all;clc;
 %% Add the folders of multimode files and others
 addpath('../');                                         % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
 
-[fiber, sim, input_field, others] = Amit_Singlemode_1modes;
+[fiber, sim, input_field, others] = Barak_GIF625_NanoSecPulse;
 
 modes = others.modes; 
 
@@ -66,7 +66,7 @@ title('Time Domain')
 subplot(1,2,2)
 plot(fftshift(lambda), abs(fftshift(ifft(input_field.fields))).^2)
 xlabel('Wavelength [nm]');
-xlim([1000 1600]);
+xlim([1010 1040]);
 ylabel('Intensity [a.u.]');
 title('Spectrum')
 
