@@ -4,7 +4,7 @@ clearvars; close all;clc;
 %% Add the folders of multimode files and others
 addpath('../');                                         % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
 
-[fiber, sim, input_field, others] = Barak_GIF625_NanoSecPulse;
+[fiber, sim, input_field, others] = GIF625_520nm_NanoSecPulse;
 
 modes = others.modes; 
 
@@ -66,7 +66,7 @@ title('Time Domain')
 subplot(1,2,2)
 plot(fftshift(lambda), abs(fftshift(ifft(input_field.fields))).^2)
 xlabel('Wavelength [nm]');
-xlim([1010 1040]);
+xlim([519.99 520.01]);
 ylabel('Intensity [a.u.]');
 title('Spectrum')
 
@@ -133,7 +133,7 @@ legend
 % xlim([-5 5]);
 xlabel('Time (ps)');
 ylabel('Intensity (W)');
-title('The final output field of YDFA');
+title('The final output field');
 
 
 %% Spectrum
@@ -148,7 +148,7 @@ legend
 xlabel('Wavelength (nm)');
 ylabel('Intensity (a.u.)');
 title('The final output spectrum');
-xlim([600 2000]);
+xlim([510 530]);
 
 %% plot evolution
 
@@ -182,7 +182,7 @@ for jj=1:(fiber.L0/sim.save_period)
     xlim([-3 3]);
     xlabel('Time (ps)');
     ylabel('Intensity (W)');
-    title(['The field of YDFA' '   z:' num2str(distance(jj)) '[m]']);
+    title(['The field' '   z:' num2str(distance(jj)) '[m]']);
     drawnow
 end
 
