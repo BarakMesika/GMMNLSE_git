@@ -64,9 +64,15 @@ ylabel('Intensity [W]')
 title('Time Domain')
 
 subplot(1,2,2)
-plot(fftshift(lambda), abs(fftshift(ifft(input_field.fields))).^2)
+
+% plot(fftshift(lambda), abs(fftshift(ifft(input_field.fields))).^2)
+% xlim([519.99 520.01]);
 xlabel('Wavelength [nm]');
-xlim([519.99 520.01]);
+
+plot(fftshift(others.f), abs(fftshift(ifft(input_field.fields))).^2)
+% xlim([519.99 520.01]);
+xlabel('Frequecny [THz]');
+
 ylabel('Intensity [a.u.]');
 title('Spectrum')
 
@@ -101,6 +107,7 @@ save([dirName fName], 'output_field', 'fiber', 'sim', 'input_field', "others");
 dt = input_field.dt;
 t = others.t;
 lambda = others.lambda;
+f = others.f;
 cmap = linspecer(others.modes);
 % cmap = linspecer(3);
 
@@ -137,18 +144,33 @@ title('The final output field');
 
 
 %% Spectrum
+% WAVELENGTH
+% figure;
+% for ii=1:others.modes
+%     plot(fftshift(lambda),( abs(fftshift(ifft(output_field.fields(:,ii,end)),1)).^2 ),...
+%         'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:));
+%     hold on
+% end
+% hold off
+% legend
+% xlabel('Wavelength (nm)');
+% ylabel('Intensity (a.u.)');
+% title('The final output spectrum');
+% xlim([510 530]);
+
+% FREQUECNY
 figure;
 for ii=1:others.modes
-    plot(fftshift(lambda),( abs(fftshift(ifft(output_field.fields(:,ii,end)),1)).^2 ),...
+    plot(fftshift(f),( abs(fftshift(ifft(output_field.fields(:,ii,end)),1)).^2 ),...
         'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:));
     hold on
 end
 hold off
 legend
-xlabel('Wavelength (nm)');
+xlabel('frequency (THz)');
 ylabel('Intensity (a.u.)');
 title('The final output spectrum');
-xlim([510 530]);
+% xlim([510 530]);
 
 %% plot evolution
 
