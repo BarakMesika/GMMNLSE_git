@@ -8,22 +8,22 @@ function [fiber, sim, input_field, others] = Barak_GIF625_NanoSecPulse()
         
         %% Fiber parameters
         fiber.MM_folder = '../Fibers/Barak_KBSC_10modes_1030nm/';               % Fiber data folder
-        fiber.L0 = 1;                                                                 % Fiber length [m]
+        fiber.L0 = 15;                                                                 % Fiber length [m]
         fiber.n2 = 3.2e-20;                                                              % non linear coeff [m^2/W]
         % fiber.gain_Aeff = ;                                                           % deffault is 1.6178e-10
         
         %% Simulation parameters
         time_window = 3700;                                                          % Time Window [ps]
-        N = 2^25;                                                                  % the number of time points
-        save_num = 30;                                                                % how many popagation points to save
+        N = 2^18;                                                                  % the number of time points
+        save_num = 100;                                                                % how many popagation points to save
 
 
-        sim.deltaZ = 100e-6;                                                            % delta z point [m] 
-        sim.single_yes = true;                                                          % for GPU. use true
+        sim.deltaZ = 1e-3;                                                            % delta z point [m] 
+        sim.single_yes = false;                                                          % for GPU. use true
         sim.adaptive_deltaZ.model = 0;                                                  % turn adaptive-step off
         sim.step_method = "RK4IP";                                                      % use "MPA" instead of the default "RK4IP"
         % sim.MPA.M = 10;                                                                   % if we use MPA algorithem
-        sim.Raman_model = 0;                                                            % Raman 
+        sim.Raman_model = true;                                                            % Raman 
         sim.gpu_yes = true;                                                             % enable GPU optimization
         sim.gain_model = 0;                                                             % gain modle. 0 to disable
         sim.progress_bar = true;                                                        % disable for slightly better preformence
@@ -54,9 +54,8 @@ function [fiber, sim, input_field, others] = Barak_GIF625_NanoSecPulse()
         tmp = exp(-(1/2)*(t/T0).^2);                    % init pulse shape (will be notmalized to 1nJ)
          
 
-        input_field.E_tot = 1e5; % 1e5 for 1kW peak power                                      % Total Energy [pJ]
-        % E_modes(1) = 0.9; E_modes(2) = 0.07; E_modes(3) = 0.01; 
-        E_modes(1) = 1;
+        input_field.E_tot = 4e7; % 1e6 for 1kW peak power                                      % Total Energy [pJ]
+        E_modes(1) = 0.3; E_modes(2) = 0.2; E_modes(3) = 0.2;  E_modes(4) = 0.3;
         
 
 

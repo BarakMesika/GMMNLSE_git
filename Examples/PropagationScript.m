@@ -165,7 +165,7 @@ for jj=1:(fiber.L0/sim.save_period)
     xlabel('Wavelength (nm)');
     ylabel('Intensity (a.u.)');
     title(['Spectrum' '   z:' num2str(distance(jj)) '[m]']);
-    xlim([800 1400]);
+    xlim([1020 1040]);
     drawnow
 end
 
