@@ -4,7 +4,7 @@ clearvars; close all;clc;
 %% Add the folders of multimode files and others
 addpath('../');                                         % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
 
-[fiber, sim, input_field, others] = Barak_GIF625_NanoSecPulse;
+[fiber, sim, input_field, others] = GIF625_520nm_NanoSecPulse;
 
 modes = others.modes; 
 
@@ -64,9 +64,15 @@ ylabel('Intensity [W]')
 title('Time Domain')
 
 subplot(1,2,2)
-plot(fftshift(lambda), abs(fftshift(ifft(input_field.fields))).^2)
+
+% plot(fftshift(lambda), abs(fftshift(ifft(input_field.fields))).^2)
+% xlim([519.99 520.01]);
 xlabel('Wavelength [nm]');
-xlim([1010 1040]);
+
+plot(fftshift(others.f), abs(fftshift(ifft(input_field.fields))).^2)
+% xlim([519.99 520.01]);
+xlabel('Frequecny [THz]');
+
 ylabel('Intensity [a.u.]');
 title('Spectrum')
 
@@ -101,6 +107,7 @@ save([dirName fName], 'output_field', 'fiber', 'sim', 'input_field', "others");
 dt = input_field.dt;
 t = others.t;
 lambda = others.lambda;
+f = others.f;
 cmap = linspecer(others.modes);
 % cmap = linspecer(3);
 
@@ -133,22 +140,37 @@ legend
 % xlim([-5 5]);
 xlabel('Time (ps)');
 ylabel('Intensity (W)');
-title('The final output field of YDFA');
+title('The final output field');
 
 
 %% Spectrum
+% WAVELENGTH
+% figure;
+% for ii=1:others.modes
+%     plot(fftshift(lambda),( abs(fftshift(ifft(output_field.fields(:,ii,end)),1)).^2 ),...
+%         'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:));
+%     hold on
+% end
+% hold off
+% legend
+% xlabel('Wavelength (nm)');
+% ylabel('Intensity (a.u.)');
+% title('The final output spectrum');
+% xlim([510 530]);
+
+% FREQUECNY
 figure;
 for ii=1:others.modes
-    plot(fftshift(lambda),( abs(fftshift(ifft(output_field.fields(:,ii,end)),1)).^2 ),...
+    plot(fftshift(f),( abs(fftshift(ifft(output_field.fields(:,ii,end)),1)).^2 ),...
         'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:));
     hold on
 end
 hold off
 legend
-xlabel('Wavelength (nm)');
+xlabel('frequency (THz)');
 ylabel('Intensity (a.u.)');
 title('The final output spectrum');
-xlim([600 2000]);
+% xlim([510 530]);
 
 %% plot evolution
 
@@ -182,7 +204,7 @@ for jj=1:(fiber.L0/sim.save_period)
     xlim([-3 3]);
     xlabel('Time (ps)');
     ylabel('Intensity (W)');
-    title(['The field of YDFA' '   z:' num2str(distance(jj)) '[m]']);
+    title(['The field' '   z:' num2str(distance(jj)) '[m]']);
     drawnow
 end
 

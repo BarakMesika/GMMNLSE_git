@@ -1,4 +1,4 @@
-function [fiber, sim, input_field, others] = Barak_GIF625_NanoSecPulse()
+function [fiber, sim, input_field, others] = GIF625_520nm_NanoSecPulse()
 
 
         %% Other Prameters
@@ -50,7 +50,7 @@ function [fiber, sim, input_field, others] = Barak_GIF625_NanoSecPulse()
         % noise = noise/sqrt( dt*sum(abs(noise).^2)*1e-3 )*sqrt(1e-6);
         noise = 0;
 
-		T0 = 900 / ( 2*sqrt(log(2)) );               % 900ps FWHM
+		T0 = 100e3 / ( 2*sqrt(log(2)) );               % 300ns FWHM
         tmp = exp(-(1/2)*(t/T0).^2);                    % init pulse shape (will be notmalized to 1nJ)
          
 
@@ -78,6 +78,7 @@ function [fiber, sim, input_field, others] = Barak_GIF625_NanoSecPulse()
         c = 299792.458; % [nm/ps];
         others.lambda = c./f; % [nm]
         others.t = t;
+        others.f = f;
 
         % normlized energy to 1pJ
         tmp = tmp/sqrt( dt*sum(abs(tmp).^2));
