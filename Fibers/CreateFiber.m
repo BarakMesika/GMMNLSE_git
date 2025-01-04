@@ -1,5 +1,6 @@
 %% create new fiber
 clc; clear;close;
+addpath ('/home/barakmessica/git');
 addpath('CreateFiberMatlabFiles/');
 %% Get fiber parameters
 % change it acording to the requested fiber
