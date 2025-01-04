@@ -1,5 +1,5 @@
 clearvars; close all;clc;
-
+addpath ('/home/barakmessica/git');
 % run from the sub folder. the section add to the path the main simulation folder
 %% Add the folders of multimode files and others
 addpath('../');                                         % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
