@@ -4,7 +4,7 @@ clearvars; close all;clc;
 %% Add the folders of multimode files and others
 addpath('../');                                         % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
 
-[fiber, sim, input_field, others] = GIF625_520nm_NanoSecPulse;
+[fiber, sim, input_field, others] = GIF3000_5modes_532nm;
 
 modes = others.modes; 
 
@@ -174,91 +174,109 @@ title('The final output spectrum');
 
 %% plot evolution
 
-%% spectrum
 figure;
-for jj=1:(fiber.L0/sim.save_period)
-    for ii=1:others.modes
-        plot(fftshift(lambda),( abs(fftshift(ifft(output_field.fields(:,ii,jj)),1)).^2 ),...
-            'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:));
-        hold on
-    end
-    hold off
-    legend
-    xlabel('Wavelength (nm)');
-    ylabel('Intensity (a.u.)');
-    title(['Spectrum' '   z:' num2str(distance(jj)) '[m]']);
-    xlim([800 1400]);
-    drawnow
-end
+sgtitle('Pulse Propagation')
 
-%% time
-figure;
+subplot(1,2,1)
+legend
+xlabel('Time (ps)');
+ylabel('Intensity (W)');
+
+subplot(1,2,2)
+legend
+% xlabel('Wavelength (nm)');
+xlabel('Frequecny [THz]');
+ylabel('Intensity (a.u.)');
+
 for jj=1:(fiber.L0/sim.save_period)
+
     for ii=1:others.modes
+        subplot(1,2,1)
         plot(t, abs(output_field.fields(:,ii,jj)).^2,'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2,...
             'Color', cmap(ii,:));
         hold on
+
+        subplot(1,2,2)
+        % wavelength
+        % plot(fftshift(lambda),( abs(fftshift(ifft(output_field.fields(:,ii,jj)),1)).^2 ),...
+        %     'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:));
+
+        %frequency
+        plot(fftshift(others.f),( abs(fftshift(ifft(output_field.fields(:,ii,jj)),1)).^2 ),...
+            'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:));
+        hold on
     end
+
+    subplot(1,2,1)
     hold off
-    legend
-    xlim([-3 3]);
     xlabel('Time (ps)');
     ylabel('Intensity (W)');
     title(['The field' '   z:' num2str(distance(jj)) '[m]']);
     drawnow
+
+    subplot(1,2,2)
+    hold off
+    % xlabel('Wavelength (nm)');
+    xlabel('Frequecny [THz]');
+    ylabel('Intensity (a.u.)');
+    title(['Spectrum' '   z:' num2str(distance(jj)) '[m]']);
+    xlim([sim.f0-30 sim.f0+30])
+    drawnow
+
 end
+
 
 %% Propagation map
 
-for jj=1:(fiber.L0/sim.save_period)
-    for ii=1:others.modes
-        WL_c(ii,jj) = CenterWl( fftshift(lambda), fftshift(ifft(output_field.fields(:,ii,jj)),1) ) ;
-        T_c (ii,jj) = CenterT( t, output_field.fields(:,ii,jj) );
-        PeakPower(ii,jj) = max(abs(output_field.fields(:,ii,jj)).^2);
-    end
-end
-
-x = 0:sim.save_period:fiber.L0;
-x = x(1:end-1);
-
-for ii=1:others.modes
-    subplot(2,1,1)
-    plot(x, T_c(ii,:),'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2,'Color', cmap(ii,:))
-    hold on
-    subplot(2,1,2)
-    plot(x, WL_c(ii,:), 'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:))
-    hold on
-
-end
-
-subplot(2,1,1)
-xlabel('Z[m]')
-ylabel('Center Time [ps]')
-legend;
-
-subplot(2,1,2)
-xlabel('Z[m]')
-ylabel('Center Wavelength [nm]')
-legend;
-
-hold off
-
-figure;
-for ii=1:others.modes
-    hold on
-        plot(x, PeakPower(ii,:),'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2,'Color', cmap(ii,:))
-end
-hold off
-xlabel('Z[m]')
-ylabel('Peak Power [W]')
-legend;
-
-
-function lc = CenterWl(lambda, Ffield)
-    
-    lc = trapz(lambda .* abs(Ffield).^2) / trapz(abs(Ffield).^2) ;
-
-end
+% for jj=1:(fiber.L0/sim.save_period)
+%     for ii=1:others.modes
+%         WL_c(ii,jj) = CenterWl( fftshift(lambda), fftshift(ifft(output_field.fields(:,ii,jj)),1) ) ;
+%         T_c (ii,jj) = CenterT( t, output_field.fields(:,ii,jj) );
+%         PeakPower(ii,jj) = max(abs(output_field.fields(:,ii,jj)).^2);
+%     end
+% end
+% 
+% x = 0:sim.save_period:fiber.L0;
+% x = x(1:end-1);
+% 
+% for ii=1:others.modes
+%     subplot(2,1,1)
+%     plot(x, T_c(ii,:),'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2,'Color', cmap(ii,:))
+%     hold on
+%     subplot(2,1,2)
+%     plot(x, WL_c(ii,:), 'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:))
+%     hold on
+% 
+% end
+% 
+% subplot(2,1,1)
+% xlabel('Z[m]')
+% ylabel('Center Time [ps]')
+% legend;
+% 
+% subplot(2,1,2)
+% xlabel('Z[m]')
+% ylabel('Center Wavelength [nm]')
+% legend;
+% 
+% hold off
+% 
+% figure;
+% for ii=1:others.modes
+%     hold on
+%         plot(x, PeakPower(ii,:),'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2,'Color', cmap(ii,:))
+% end
+% hold off
+% xlabel('Z[m]')
+% ylabel('Peak Power [W]')
+% legend;
+% 
+% 
+% function lc = CenterWl(lambda, Ffield)
+% 
+%     lc = trapz(lambda .* abs(Ffield).^2) / trapz(abs(Ffield).^2) ;
+% 
+% end
 
 function Tc = CenterT(T, field)
 

@@ -8,12 +8,12 @@ function [fiber, sim, input_field, others] = Barak_Singlemode_1modes_CW1550nm_SO
 
         %% Fiber parameters
         fiber.MM_folder = '../Fibers/Barak_Singlemode_1modes_CW1550nm/';               % Fiber data folder
-        fiber.L0 = 20;                                                                 % Fiber length [m]
+        fiber.L0 = 5;                                                                 % Fiber length [m]
         fiber.n2 = 3.2e-20;                                                              % non linear coeff [m^2/W]
         % fiber.gain_Aeff = ;                                                           % deffault is 1.6178e-10
         
         %% Simulation parameters
-        time_window = 20;                                                          % Time Window [ps]
+        time_window = 10;                                                          % Time Window [ps]
         N = 2^13;                                                                  % the number of time points
         save_num = 100;                                                                % how many popagation points to save
 
@@ -23,7 +23,7 @@ function [fiber, sim, input_field, others] = Barak_Singlemode_1modes_CW1550nm_SO
         sim.adaptive_deltaZ.model = 0;                                                  % turn adaptive-step off
         sim.step_method = "RK4IP";                                                      % use "MPA" instead of the default "RK4IP"
         % sim.MPA.M = 10;                                                                   % if we use MPA algorithem
-        sim.Raman_model = 0;                                                            % Raman 
+        sim.Raman_model = 1;                                                            % Raman 
         sim.gpu_yes = true;                                                             % enable GPU optimization
         sim.gain_model = 0;                                                             % gain modle. 0 to disable
         sim.progress_bar = true;                                                        % disable for slightly better preformence
@@ -43,7 +43,7 @@ function [fiber, sim, input_field, others] = Barak_Singlemode_1modes_CW1550nm_SO
 
          %% Initial Pulse 
  
-        T0 = 0.5 ; %    [ps]
+        T0 = 0.05 ; %    [ps]
         
 
         % tmp = exp(-1*(t/T0).^2);                    % init pulse shape (will be notmalized to 1nJ)
@@ -74,6 +74,7 @@ function [fiber, sim, input_field, others] = Barak_Singlemode_1modes_CW1550nm_SO
         c = 299792.458; % [nm/ps];
         others.lambda = c./f; % [nm]
         others.t = t;
+        others.f = f;
 
 
 
@@ -93,12 +94,12 @@ function [fiber, sim, input_field, others] = Barak_Singlemode_1modes_CW1550nm_SO
         E_modes(1) = 1;
 
         Ld = T0^2/abs(fiber.betas(3,1));
-        % Lnl = (gamma * P0)^(-1);
         Lnl = (gammaLP01 * P0)^(-1);
 
 
         % normlized energy to 1pJ
-        tmp = tmp/sqrt( dt*sum(abs(tmp).^2) );
+        % tmp = tmp/sqrt( dt*sum(abs(tmp).^2) );
+        
 
         E_modes = E_modes * input_field.E_tot;
 
