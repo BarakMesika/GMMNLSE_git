@@ -100,7 +100,7 @@ for i = 1:length(folder_files)
 end
 
 fName = ['data_' num2str(fileCount+1,'%03.0f')];          % data file name
-save([dirName fName], 'output_field', 'fiber', 'sim', 'input_field', "others");
+save([dirName fName], 'output_field', 'fiber', 'sim', 'input_field', "others", '-v7.3', '-nocompression');
 
 %% Plot results
 
