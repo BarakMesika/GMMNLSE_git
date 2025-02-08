@@ -1,10 +1,8 @@
-clearvars; close all;clc;
+function PropagationScript_fun(fiber, sim, input_field, others)
 
 % run from the sub folder. the section add to the path the main simulation folder
 %% Add the folders of multimode files and others
 addpath('../');                                         % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
-
-[fiber, sim, input_field, others] = GIF625_520nm_NanoSecPulse;
 
 modes = others.modes; 
 
@@ -65,11 +63,11 @@ title('Time Domain')
 
 subplot(1,2,2)
 
-% plot(fftshift(lambda), abs(fftshift(ifft(input_field.fields))).^2)
+plot(fftshift(lambda), abs(fftshift(ifft(input_field.fields))).^2)
 % xlim([519.99 520.01]);
 xlabel('Wavelength [nm]');
 
-plot(fftshift(others.f), abs(fftshift(ifft(input_field.fields))).^2)
+% plot(fftshift(others.f), abs(fftshift(ifft(input_field.fields))).^2)
 % xlim([519.99 520.01]);
 xlabel('Frequecny [THz]');
 
@@ -78,10 +76,7 @@ title('Spectrum')
 
 
 % check input energy
-% for i=1:others.modes
-%     E_tmp = trapz(abs(input_field.fields(:,i)).^2) * input_field.dt;
-%     fprintf('mode %d: %d pJ\n',i, E_tmp);
-% end
+% trapz(abs(input_field.fields(:,1)).^2) * input_field.dt
 %% Propagation
 
 dirName  = others.data_folder;                        % new folder to save the data
@@ -112,6 +107,7 @@ t = others.t;
 lambda = others.lambda;
 f = others.f;
 cmap = linspecer(others.modes);
+distance = 0:sim.save_period:fiber.L0;
 % cmap = linspecer(3);
 
 %% Energy 
@@ -135,12 +131,9 @@ figure;
 E_tot_time = sum(E,1);
 nexttile
 plot(distance, E_tot_time)
-title('total energy vs. Z')
 % max(E_tot_time)-min(E_tot_time)
 nexttile
 plot(diff(E_tot_time))
-title('derivative on the energy change');
-sgtitle('Energy change')
 
 %% Field
 figure;
@@ -234,12 +227,13 @@ for jj=1:(fiber.L0/sim.save_period)
     xlabel('Frequecny [THz]');
     ylabel('Intensity (a.u.)');
     title(['Spectrum' '   z:' num2str(distance(jj)) '[m]']);
-    % xlim([sim.f0-30 sim.f0+30])
+    % xlim([sim.f0-15 sim.f0+15])
     drawnow
 
     % pause(0.2)
 
 end
+
 
 
 %% Propagation map
@@ -315,3 +309,4 @@ end
 %     end
 % end
 
+end
