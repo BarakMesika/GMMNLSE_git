@@ -79,6 +79,7 @@ function [fiber, sim, input_field, others] = popagation_parameters_template()
         c = 299792.458; % [nm/ps];
         others.lambda = c./f; % [nm]
         others.t = t;
+        others.f = f;
 
         % normlized energy to 1pJ
         tmp = tmp/sqrt( dt*sum(abs(tmp).^2));
