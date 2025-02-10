@@ -1,29 +1,29 @@
-function [fiber, sim, input_field, others] = GIF625_520nm_NanoSecPulse(L0,N,dz,E_tot)
+function [fiber, sim, input_field, others] = GIF300_10modes_532nm(E_tot,dz)
 
 
         %% Other Prameters
-        others.data_folder = 'GIF625_nanosec_cleanup\'; % where to save the propagation data
+        others.data_folder = 'GIF300_10ns_E_varification\'; % where to save the propagation data
 
 
         
         %% Fiber parameters
-        fiber.MM_folder = '../Fibers/Barak_KBSC_10modes_1030nm/';               % Fiber data folder
-        fiber.L0 = 15;                                                                 % Fiber length [m]
-        fiber.n2 = 3.2e-20;                                                              % non linear coeff [m^2/W]
+        fiber.MM_folder = '../Fibers/GIF300_10modes_534nm/';               % Fiber data folder
+        fiber.L0 = 20;                                                                 % Fiber length [m]
+        fiber.n2 =2.3e-20;                                                              % non linear coeff [m^2/W]
         % fiber.gain_Aeff = ;                                                           % deffault is 1.6178e-10
         
         %% Simulation parameters
-        time_window = 3700;                                                          % Time Window [ps]
-        N = 2^18;                                                                  % the number of time points
+        time_window = 100e3;                                                          % Time Window [ps]
+        N = 2^14;                                                                  % the number of time points
         save_num = 100;                                                                % how many popagation points to save
 
 
-        sim.deltaZ = 1e-3;                                                            % delta z point [m] 
+        sim.deltaZ = dz;                                                            % delta z point [m] 
         sim.single_yes = false;                                                          % for GPU. use true
         sim.adaptive_deltaZ.model = 0;                                                  % turn adaptive-step off
         sim.step_method = "RK4IP";                                                      % use "MPA" instead of the default "RK4IP"
         % sim.MPA.M = 10;                                                                   % if we use MPA algorithem
-        sim.Raman_model = true;                                                            % Raman 
+        sim.Raman_model = 0;                                                            % Raman 
         sim.gpu_yes = true;                                                             % enable GPU optimization
         sim.gain_model = 0;                                                             % gain modle. 0 to disable
         sim.progress_bar = true;                                                        % disable for slightly better preformence
@@ -50,21 +50,14 @@ function [fiber, sim, input_field, others] = GIF625_520nm_NanoSecPulse(L0,N,dz,E
         % noise = noise/sqrt( dt*sum(abs(noise).^2)*1e-3 )*sqrt(1e-6);
         noise = 0;
 
-		T0 = 10e3 / ( 2*sqrt(log(2)) );   % 175e-3 -> 10e3; 1e5 extention            % 175fs FWHM ( 1/2 NO 1/e)
+		T0 = 10e3 / ( 2*sqrt(log(2)) );               % 175fs FWHM ( 1/2 NO 1/e)
         tmp = exp(-(1/2)*(t/T0).^2);                    % init pulse shape (will be notmalized to 1nJ)
          
-
-        input_field.E_tot = 4e7; % 1e6 for 1kW peak power                                      % Total Energy [pJ]
-        E_modes(1) = 0.3; E_modes(2) = 0.2; E_modes(3) = 0.2;  E_modes(4) = 0.3;
+        % input_field.E_tot = 1e9;                                      % Total Energy [pJ]
+        input_field.E_tot = E_tot;
+        E_modes(1) = 0.2; E_modes(2) = 0.2; E_modes(3) = 0.2;
+        E_modes(4) = 0.2; E_modes(5) = 0.2;
         
-        
-        % E_modes(1) = 0.1; E_modes(2) = 0.1; E_modes(3) = 0.1; E_modes(4) = 0.1; E_modes(5) = 0.1;
-        % E_modes(6) = 0.1; E_modes(7) = 0.1; E_modes(8) = 0.1; E_modes(9) = 0.1; E_modes(10) = 0.1;
-
-        % E_modes(1) = 0.5; E_modes(2) = 0.5;
-
-
-
 
         %%  DONT EDIT 
         % sets the other parameters
@@ -94,7 +87,6 @@ function [fiber, sim, input_field, others] = GIF625_520nm_NanoSecPulse(L0,N,dz,E
         for ii=1:others.modes
             input_field.fields(:,ii) = sqrt(E_modes(ii))*tmp + noise;
         end
-
 
 
         % dispersion and non linear lengths caculations

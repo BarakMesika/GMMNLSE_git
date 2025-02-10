@@ -4,7 +4,7 @@ clearvars; close all;clc;
 %% Add the folders of multimode files and others
 addpath('../');                                         % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
 
-[fiber, sim, input_field, others] = GIF625_520nm_NanoSecPulse;
+[fiber, sim, input_field, others] = GIF625_520nm_NanoSecPulse(0.5,2^12,10e-6,5e8);
 
 modes = others.modes; 
 
