@@ -1,8 +1,8 @@
 clc; clear;  close all;
 
 
-E_tot = [0.05 0.1 0.5 1 2 5 ]*1e9 ;
-L0 = 15;
+E_tot = [5e6, 1e7, 5e7, 1e8, 1e9];
+L0 = 5;
 N=2^12;
 dz = 10 * 1e-6;
 
