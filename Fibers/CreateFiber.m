@@ -3,7 +3,7 @@ clc; clear;close;
 addpath('CreateFiberMatlabFiles/');
 %% Get fiber parameters
 % change it acording to the requested fiber
-data = GIF300_10modes_534nm();
+data = Barak_GIF625_3center_modes_CW1550nm_1550nm();
 
 %% 1. Define the fiber and solve for the modes
 solve_for_modes_fun(data);

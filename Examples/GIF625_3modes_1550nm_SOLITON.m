@@ -1,25 +1,25 @@
-function [fiber, sim, input_field, others] = GIF300_10modes_532nm(L0,N,dz,E_tot)
+function [fiber, sim, input_field, others] = GIF625_3modes_1550nm_SOLITON()
 
 
         %% Other Prameters
-        others.data_folder = 'GIF300_debug\'; % where to save the propagation data
+        others.data_folder = 'Multi_mode_SOLITON\'; % where to save the propagation data
 
 
         
         %% Fiber parameters
-        fiber.MM_folder = '../Fibers/GIF300_10modes_534nm/';               % Fiber data folder
-        fiber.L0 = L0;                                                                 % Fiber length [m]
-        fiber.n2 =2.3e-20;                                                              % non linear coeff [m^2/W]
+        fiber.MM_folder = '../Fibers/Barak_GIF625_3center_modes_CW1550nm_1550nm/';               % Fiber data folder
+        fiber.L0 = 30;                                                                 % Fiber length [m]
+        fiber.n2 =3.2e-20;                                                              % non linear coeff [m^2/W]
         % fiber.gain_Aeff = ;                                                           % deffault is 1.6178e-10
         
         %% Simulation parameters
-        time_window = 100e3;                                                          % Time Window [ps]
-        N = N;                                                                  % the number of time points
-        save_num = 500;                                                                % how many popagation points to save
+        time_window = 5;                                                          % Time Window [ps]
+        N = 2^12;                                                                  % the number of time points
+        save_num = 400;                                                                % how many popagation points to save
 
 
-        sim.deltaZ = dz;                                                            % delta z point [m] 
-        sim.single_yes = false;                                                          % for GPU. use true
+        sim.deltaZ = 100e-5;                                                            % delta z point [m] 
+        sim.single_yes = true;                                                          % for GPU. use true
         sim.adaptive_deltaZ.model = 0;                                                  % turn adaptive-step off
         sim.step_method = "RK4IP";                                                      % use "MPA" instead of the default "RK4IP"
         % sim.MPA.M = 10;                                                                   % if we use MPA algorithem
@@ -50,13 +50,17 @@ function [fiber, sim, input_field, others] = GIF300_10modes_532nm(L0,N,dz,E_tot)
         % noise = noise/sqrt( dt*sum(abs(noise).^2)*1e-3 )*sqrt(1e-6);
         noise = 0;
 
-		T0 = 10e3 / ( 2*sqrt(log(2)) );               % 175fs FWHM ( 1/2 NO 1/e)
-        tmp = exp(-(1/2)*(t/T0).^2);                    % init pulse shape (will be notmalized to 1nJ)
+		T0 = 0.1;               
+        tmp = sech(-t/T0);                    % init pulse shape (will be notmalized to 1nJ)
          
-        input_field.E_tot = E_tot;                      % Total Energy [pJ]
-        E_modes(1) = 0.2; E_modes(2) = 0.2; E_modes(3) = 0.2;
-        E_modes(4) = 0.2; E_modes(5) = 0.2;
+
+        input_field.E_tot = 1;                                      % Total Energy [pJ]
+        E_modes(1) = 0.9; E_modes(4) = 0.09; E_modes(11) = 0.01; 
         
+        
+
+
+
 
         %%  DONT EDIT 
         % sets the other parameters
@@ -78,7 +82,14 @@ function [fiber, sim, input_field, others] = GIF300_10modes_532nm(L0,N,dz,E_tot)
         others.f = f;
 
         % normlized energy to 1pJ
-        tmp = tmp/sqrt( dt*sum(abs(tmp).^2));
+        % tmp = tmp/sqrt( dt*sum(abs(tmp).^2));
+
+        w0 = 2*pi*sim.f0;
+        nonlin_const = fiber.n2*w0/2.99792458e-4; % W^-1 m
+        gammaLP01 = nonlin_const*fiber.SR(1,1,1,1);
+        P0 = abs(fiber.betas(3,1))/gammaLP01/(T0.^2);
+
+        input_field.E_tot = P0;
 
         E_modes = E_modes * input_field.E_tot;
 
@@ -92,10 +103,9 @@ function [fiber, sim, input_field, others] = GIF300_10modes_532nm(L0,N,dz,E_tot)
         w0 = 2*pi*sim.f0;
         nonlin_const = fiber.n2*w0/2.99792458e-4; % W^-1 m
         gammaLP01 = nonlin_const*fiber.SR(1,1,1,1);
-        % P0 = abs(fiber.betas(3,1))/gammaLP01/(T0.^2);
-        P0 = max( abs( input_field.fields(:,1) ).^2 );
+        P0 = abs(fiber.betas(3,1))/gammaLP01/(T0.^2);
 
-        Ld = T0^2/abs(fiber.betas(3,1));
-        Lnl = (gammaLP01 * P0)^(-1);
+        Ld = T0^2/abs(fiber.betas(3,1))
+        Lnl = (gammaLP01 * P0)^(-1)
 
 end

@@ -4,7 +4,7 @@ clearvars; close all;clc;
 %% Add the folders of multimode files and others
 addpath('../');                                         % add where many GMMNLSE-related functions like  "GMMNLSE_propagate" is
 
-[fiber, sim, input_field, others] = GIF625_520nm_NanoSecPulse(0.5,2^12,10e-6,5e8);
+[fiber, sim, input_field, others] = GIF300_10modes_1064nm;
 
 modes = others.modes; 
 
@@ -143,6 +143,7 @@ title('derivative on the energy change');
 sgtitle('Energy change')
 
 %% Field
+% zidx = end;
 figure;
 for ii=1:others.modes
     plot(t, abs(output_field.fields(:,ii,end)).^2,'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2,...
@@ -154,8 +155,8 @@ legend
 % xlim([-5 5]);
 xlabel('Time (ps)');
 ylabel('Intensity (W)');
+% title('The final output field - z= ' , num2str(distance(zidx)) );
 title('The final output field');
-
 
 %% Spectrum
 % WAVELENGTH
@@ -187,59 +188,113 @@ title('The final output spectrum');
 % xlim([510 530]);
 
 %% plot evolution
-
+% 
+% figure;
+% sgtitle('Pulse Propagation')
+% 
+% subplot(1,2,1)
+% legend
+% xlabel('Time (ps)');
+% ylabel('Intensity (W)');
+% 
+% subplot(1,2,2)
+% legend
+% % xlabel('Wavelength (nm)');
+% xlabel('Frequecny [THz]');
+% ylabel('Intensity (a.u.)');
+% 
+% for jj=1:(fiber.L0/sim.save_period)
+% 
+%     for ii=1:others.modes
+%         subplot(1,2,1)
+%         plot(t, abs(output_field.fields(:,ii,jj)).^2,'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2,...
+%             'Color', cmap(ii,:));
+%         hold on
+% 
+%         subplot(1,2,2)
+%         % wavelength
+%         % plot(fftshift(lambda),( abs(fftshift(ifft(output_field.fields(:,ii,jj)),1)).^2 ),...
+%         %     'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:));
+% 
+%         %frequency
+%         xlim([sim.f0-10 sim.f0+10])
+%         plot(fftshift(others.f),( abs(fftshift(ifft(output_field.fields(:,ii,jj)),1)).^2 ),...
+%             'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:));
+%         hold on
+%     end
+% 
+%     subplot(1,2,1)
+%     hold off
+%     xlabel('Time (ps)');
+%     ylabel('Intensity (W)');
+%     title(['The field' '   z:' num2str(distance(jj)) '[m]']);
+%     drawnow
+% 
+%     subplot(1,2,2)
+%     hold off
+%     % xlabel('Wavelength (nm)');
+%     xlabel('Frequecny [THz]');
+%     ylabel('Intensity (a.u.)');
+%     title(['Spectrum' '   z:' num2str(distance(jj)) '[m]']);
+%     xlim([sim.f0-10 sim.f0+10])
+%     drawnow
+% 
+%     % pause(0.2)
+% 
+% end
+%% plot evolution
 figure;
-sgtitle('Pulse Propagation')
+sgtitle('Pulse Propagation');
+[ax1, ax2] = deal(subplot(1,2,1), subplot(1,2,2));
+
+% Initialize plots
+hold(ax1, 'on'); xlabel(ax1, 'Time (ps)'); ylabel(ax1, 'Intensity (W)');
+hold(ax2, 'on'); xlabel(ax2, 'Frequency [THz]'); ylabel(ax2, 'Intensity (a.u.)');
+xlim(ax2, [sim.f0-0.2, sim.f0+0.2]);
+
+lines1 = gobjects(others.modes, 1);
+lines2 = gobjects(others.modes, 1);
+for ii = 1:others.modes
+    lines1(ii) = plot(ax1, NaN, NaN, 'LineWidth', 2, 'Color', cmap(ii,:));
+    lines2(ii) = plot(ax2, NaN, NaN, 'LineWidth', 2, 'Color', cmap(ii,:));
+end
+legend(ax1, 'show'); legend(ax2, 'show');
+
+
+for jj = 1:(fiber.L0/sim.save_period)
+    for ii = 1:others.modes
+        set(lines1(ii), 'XData', t, 'YData', abs(output_field.fields(:,ii,jj)).^2);
+        set(lines2(ii), 'XData', fftshift(others.f), 'YData', abs(fftshift(ifft(output_field.fields(:,ii,jj)))).^2);
+    end
+    title(ax1, ['z:' num2str(distance(jj)) '[m]']);
+    title(ax2, ['z:' num2str(distance(jj)) '[m]']);
+    
+    drawnow limitrate;
+    pause(0.1)
+end
+
+
+%% one image propagation - all field
+figure;
+
+sgtitle("Multi Mode GIF Soliton", 'FontSize', 25)
 
 subplot(1,2,1)
-legend
-xlabel('Time (ps)');
-ylabel('Intensity (W)');
+imagesc(distance, t, abs( squeeze(sum(output_field.fields,2) ) ).^2 )
+ylabel('Time (ps)', 'FontSize', 16);
+xlabel('Z (m)', 'FontSize', 16);
+title('Time domain', 'FontSize', 20);
+% ylim([-2 2])
+
 
 subplot(1,2,2)
-legend
-% xlabel('Wavelength (nm)');
-xlabel('Frequecny [THz]');
-ylabel('Intensity (a.u.)');
+imagesc(distance, fftshift(others.f), abs( squeeze(fftshift(ifft(sum(output_field.fields,2)) ) ) ).^2)
+xlabel('Z (m)', 'FontSize', 16);
+ylabel('Frequecny [THz]', 'FontSize', 16);
+title('Frequency domain', 'FontSize', 20);
+ylim([sim.f0-30 sim.f0+30])
 
-for jj=1:(fiber.L0/sim.save_period)
 
-    for ii=1:others.modes
-        subplot(1,2,1)
-        plot(t, abs(output_field.fields(:,ii,jj)).^2,'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2,...
-            'Color', cmap(ii,:));
-        hold on
-
-        subplot(1,2,2)
-        % wavelength
-        % plot(fftshift(lambda),( abs(fftshift(ifft(output_field.fields(:,ii,jj)),1)).^2 ),...
-        %     'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:));
-
-        %frequency
-        plot(fftshift(others.f),( abs(fftshift(ifft(output_field.fields(:,ii,jj)),1)).^2 ),...
-            'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:));
-        hold on
-    end
-
-    subplot(1,2,1)
-    hold off
-    xlabel('Time (ps)');
-    ylabel('Intensity (W)');
-    title(['The field' '   z:' num2str(distance(jj)) '[m]']);
-    drawnow
-
-    subplot(1,2,2)
-    hold off
-    % xlabel('Wavelength (nm)');
-    xlabel('Frequecny [THz]');
-    ylabel('Intensity (a.u.)');
-    title(['Spectrum' '   z:' num2str(distance(jj)) '[m]']);
-    % xlim([sim.f0-30 sim.f0+30])
-    drawnow
-
-    % pause(0.2)
-
-end
 
 
 %% Propagation map

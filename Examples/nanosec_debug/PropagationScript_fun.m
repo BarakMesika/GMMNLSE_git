@@ -1,4 +1,4 @@
-function PropagationScript_fun(fiber, sim, input_field, others)
+function PropagationScript_fun(fiber, sim, input_field, others,propagation_print)
 
 % run from the sub folder. the section add to the path the main simulation folder
 %% Add the folders of multimode files and others
@@ -180,60 +180,61 @@ title('The final output spectrum');
 % xlim([510 530]);
 
 %% plot evolution
-
-figure;
-sgtitle('Pulse Propagation')
-
-subplot(1,2,1)
-legend
-xlabel('Time (ps)');
-ylabel('Intensity (W)');
-
-subplot(1,2,2)
-legend
-% xlabel('Wavelength (nm)');
-xlabel('Frequecny [THz]');
-ylabel('Intensity (a.u.)');
-
-for jj=1:(fiber.L0/sim.save_period)
-
-    for ii=1:others.modes
-        subplot(1,2,1)
-        plot(t, abs(output_field.fields(:,ii,jj)).^2,'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2,...
-            'Color', cmap(ii,:));
-        hold on
-
-        subplot(1,2,2)
-        % wavelength
-        % plot(fftshift(lambda),( abs(fftshift(ifft(output_field.fields(:,ii,jj)),1)).^2 ),...
-        %     'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:));
-
-        %frequency
-        plot(fftshift(others.f),( abs(fftshift(ifft(output_field.fields(:,ii,jj)),1)).^2 ),...
-            'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:));
-        hold on
-    end
+if propagation_print
+    figure;
+    sgtitle('Pulse Propagation')
 
     subplot(1,2,1)
-    hold off
+    legend
     xlabel('Time (ps)');
     ylabel('Intensity (W)');
-    title(['The field' '   z:' num2str(distance(jj)) '[m]']);
-    drawnow
 
     subplot(1,2,2)
-    hold off
+    legend
     % xlabel('Wavelength (nm)');
     xlabel('Frequecny [THz]');
     ylabel('Intensity (a.u.)');
-    title(['Spectrum' '   z:' num2str(distance(jj)) '[m]']);
-    % xlim([sim.f0-15 sim.f0+15])
-    drawnow
 
-    % pause(0.2)
+    for jj=1:(fiber.L0/sim.save_period)
+
+        for ii=1:others.modes
+            subplot(1,2,1)
+            plot(t, abs(output_field.fields(:,ii,jj)).^2,'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2,...
+                'Color', cmap(ii,:));
+            hold on
+
+            subplot(1,2,2)
+            % wavelength
+            % plot(fftshift(lambda),( abs(fftshift(ifft(output_field.fields(:,ii,jj)),1)).^2 ),...
+            %     'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:));
+
+            %frequency
+            plot(fftshift(others.f),( abs(fftshift(ifft(output_field.fields(:,ii,jj)),1)).^2 ),...
+                'DisplayName', ['Mode:' num2str(ii)], 'LineWidth', 2, 'Color', cmap(ii,:));
+            hold on
+        end
+
+        subplot(1,2,1)
+        hold off
+        xlabel('Time (ps)');
+        ylabel('Intensity (W)');
+        title(['The field' '   z:' num2str(distance(jj)) '[m]']);
+        drawnow
+
+        subplot(1,2,2)
+        hold off
+        % xlabel('Wavelength (nm)');
+        xlabel('Frequecny [THz]');
+        ylabel('Intensity (a.u.)');
+        title(['Spectrum' '   z:' num2str(distance(jj)) '[m]']);
+        % xlim([sim.f0-15 sim.f0+15])
+        drawnow
+
+        % pause(0.2)
+
+    end
 
 end
-
 
 
 %% Propagation map

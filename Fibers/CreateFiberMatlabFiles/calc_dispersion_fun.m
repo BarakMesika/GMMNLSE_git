@@ -148,6 +148,7 @@ for disp_order = 1:num_disp_orders+1
     xlabel('\mum')
     title(['\beta' num2str(disp_order-1)]);
     axis tight
+    % legend
 end
 
 

@@ -1,4 +1,4 @@
-function [fiber, sim, input_field, others] = GIF300_10modes_532nm(L0,N,dz,E_tot)
+function [fiber, sim, input_field, others] = GIF300_10modes_532nm()
 
 
         %% Other Prameters
@@ -8,17 +8,17 @@ function [fiber, sim, input_field, others] = GIF300_10modes_532nm(L0,N,dz,E_tot)
         
         %% Fiber parameters
         fiber.MM_folder = '../Fibers/GIF300_10modes_534nm/';               % Fiber data folder
-        fiber.L0 = L0;                                                                 % Fiber length [m]
+        fiber.L0 = 1;                                                                 % Fiber length [m]
         fiber.n2 =2.3e-20;                                                              % non linear coeff [m^2/W]
         % fiber.gain_Aeff = ;                                                           % deffault is 1.6178e-10
         
         %% Simulation parameters
         time_window = 100e3;                                                          % Time Window [ps]
-        N = N;                                                                  % the number of time points
+        N = 2^15;                                                                  % the number of time points
         save_num = 500;                                                                % how many popagation points to save
 
 
-        sim.deltaZ = dz;                                                            % delta z point [m] 
+        sim.deltaZ = 10e-6;                                                            % delta z point [m] 
         sim.single_yes = false;                                                          % for GPU. use true
         sim.adaptive_deltaZ.model = 0;                                                  % turn adaptive-step off
         sim.step_method = "RK4IP";                                                      % use "MPA" instead of the default "RK4IP"
@@ -53,7 +53,7 @@ function [fiber, sim, input_field, others] = GIF300_10modes_532nm(L0,N,dz,E_tot)
 		T0 = 10e3 / ( 2*sqrt(log(2)) );               % 175fs FWHM ( 1/2 NO 1/e)
         tmp = exp(-(1/2)*(t/T0).^2);                    % init pulse shape (will be notmalized to 1nJ)
          
-        input_field.E_tot = E_tot;                      % Total Energy [pJ]
+        input_field.E_tot = 1e7;                      % Total Energy [pJ]
         E_modes(1) = 0.2; E_modes(2) = 0.2; E_modes(3) = 0.2;
         E_modes(4) = 0.2; E_modes(5) = 0.2;
         

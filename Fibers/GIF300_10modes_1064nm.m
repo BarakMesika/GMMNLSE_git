@@ -1,27 +1,34 @@
+% created by BarakM 11.5.24
+% here you set all the fiber parameters that you want to create.
+% then use this function on "Create_Fiber" scrip
+
 %% PLEASE
 % make the folder and the function in the same name
 %% Fiber parameters
 % enter here all the relevant parameter for the fiber
 
-function data = Barak_GIF625_3center_modes_CW1550nm_1550nm()
-data.folder_name = 'Barak_GIF625_3center_modes_CW1550nm_1550nm';    % folder where the output will be stored
+function data = GIF300_10modes_1064nm()
+data.folder_name = 'GIF300_10modes_1064nm';    % folder where the output will be stored
 
 % wavelength and modes
-data.lambda0 = 1550e-9;                          % center wavelength [m]
+data.lambda0 = 1064e-9;                          % center wavelength [m]
 data.lrange = 100e-9;                            % wavelength range [m]. If 0 only the center wavelength will be used
 data.Nf = 10;                                     % number of frequency points at which the modes will be calculated
-data.num_modes = 12;                              % number of modes to calculate
+data.num_modes = 10;                              % number of modes to calculate
 
 % fiber size and grid
-data.radius = (62.5/2);                    % outer radius of fiber [um].
-data.spatial_window = data.radius * 4;                        % full spatial window size [um]
+data.radius = 300/2;                                 % outer radius of fiber [um]. 
+data.spatial_window = data.radius * 3;                        % full spatial window size [um]
 data.Nx = 1024;                                  % number of spatial grid points
 
 
 % optical fiber features
-data.extra_params.ncore_diff = 0.0298;           % difference between the index at the center of the core, and the cl
+NA = 0.25; % NA= sqrt(core^2-clad^2)
+n_clad = 1.46; % %fuzed silica 534nm 
+n_core = sqrt(NA^2+n_clad^2);
+data.extra_params.ncore_diff = n_core-n_clad;           % difference between the index at the center of the core, and the cl
 data.extra_params.alpha = 2.00;                  % Shape parameter
-data.extra_params.NA = 0.275;                     % Numerical Aperture
+data.extra_params.NA = 0.25;                     % Numerical Aperture
 
 % fiber refractive index type
 data.profile_function = @build_GRIN;             % function that builds the fiber ; build_GRIN\build_step

@@ -23,11 +23,11 @@ function [fiber, sim, input_field, others] = Barak_Singlemode_1modes_CW1550nm_SO
         sim.adaptive_deltaZ.model = 0;                                                  % turn adaptive-step off
         sim.step_method = "RK4IP";                                                      % use "MPA" instead of the default "RK4IP"
         % sim.MPA.M = 10;                                                                   % if we use MPA algorithem
-        sim.Raman_model = 1;                                                            % Raman 
+        sim.Raman_model = 0;                                                            % Raman 
         sim.gpu_yes = true;                                                             % enable GPU optimization
         sim.gain_model = 0;                                                             % gain modle. 0 to disable
         sim.progress_bar = true;                                                        % disable for slightly better preformence
-        sim.sw = 1;                                                                     % disable shock waves (self stipening)
+        sim.sw = 0;                                                                     % disable shock waves (self stipening)
 
 
     
